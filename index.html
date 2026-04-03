@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habit Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #0a0e27;
+            color: #ffffff;
+            padding: 16px;
+            min-height: 100vh;
+            overflow-y: auto;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        /* Hero Stats Card */
+        .hero-stats {
+            background: linear-gradient(135deg, #1a1f3a 0%, #16213e 100%);
+            border: 1px solid rgba(0, 255, 200, 0.2);
+            border-radius: 24px;
+            padding: 32px 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 32px rgba(0, 255, 200, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-stats::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(0, 255, 200, 0.1), transparent);
+            border-radius: 50%;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .money-display {
+            font-size: 48px;
+            font-weight: 900;
+            color: #00ffc8;
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+            text-align: center;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .stat-item {
+            background: rgba(0, 255, 200, 0.05);
+            border: 1px solid rgba(0, 255, 200, 0.15);
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: #00ffc8;
+        }
+
+        .streak {
+            font-size: 14px;
+            color: #ffa500;
+            margin-top: 12px;
+        }
+
+        /* Habit Cards */
+        .habits-section {
+            margin-bottom: 24px;
+        }
+
+        .section-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            margin-left: 4px;
+        }
+
+        .habit-card {
+            background: linear-gradient(135deg, #1a1f3a 0%, #16213e 100%);
+            border: 2px solid rgba(0, 255, 200, 0.2);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .habit-card:hover {
+            border-color: rgba(0, 255, 200, 0.5);
+            box-shadow: 0 8px 24px rgba(0, 255, 200, 0.15);
+            transform: translateY(-4px);
+        }
+
+        .habit-card.completed {
+            border-color: rgba(0, 200, 100, 0.4);
+            background: linear-gradient(135deg, rgba(0, 200, 100, 0.1) 0%, rgba(0, 180, 80, 0.05) 100%);
+        }
+
+        .habit-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .habit-icon {
+            font-size: 32px;
+            opacity: 0.8;
+        }
+
+        .habit-details h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .habit-details p {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .habit-reward {
+            background: rgba(0, 255, 200, 0.15);
+            border: 1px solid rgba(0, 255, 200, 0.3);
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            color: #00ffc8;
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .habit-card.completed .habit-reward {
+            background: rgba(0, 200, 100, 0.2);
+            border-color: rgba(0, 200, 100, 0.4);
+            color: #00c864;
+        }
+
+        .check-mark {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 24px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .habit-card.completed .check-mark {
+            opacity: 1;
+        }
+
+        /* Screen Time Card */
+        .screen-time-card {
+            background: linear-gradient(135deg, #2a1810 0%, #1f1410 100%);
+            border: 1px solid rgba(255, 165, 0, 0.2);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .screen-time-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .screen-time-header h3 {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .screen-time-hours {
+            font-size: 20px;
+            font-weight: 800;
+            color: #ffa500;
+        }
+
+        .screen-time-bar {
+            background: rgba(255, 165, 0, 0.1);
+            height: 8px;
+            border-radius: 4px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+
+        .screen-time-fill {
+            background: linear-gradient(90deg, #ffa500, #ff6b6b);
+            height: 100%;
+            width: 68%;
+            border-radius: 4px;
+        }
+
+        .screen-time-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #888;
+        }
+
+        .penalty-value {
+            color: #ff6b6b;
+            font-weight: 700;
+        }
+
+        .net-xp {
+            color: #00ffc8;
+            font-weight: 700;
+        }
+
+        /* Progress Card */
+        .progress-card {
+            background: linear-gradient(135deg, #1a1f3a 0%, #16213e 100%);
+            border: 1px solid rgba(0, 255, 200, 0.2);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .progress-label {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 16px;
+        }
+
+        .progress-bar {
+            background: rgba(0, 255, 200, 0.1);
+            height: 12px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 255, 200, 0.2);
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #00ffc8, #00d9ff);
+            height: 100%;
+            width: 60%;
+            border-radius: 6px;
+        }
+
+        .progress-text {
+            font-size: 14px;
+            color: #00ffc8;
+            font-weight: 600;
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 8px 24px rgba(0, 255, 200, 0.15);
+            }
+            50% {
+                box-shadow: 0 8px 32px rgba(0, 255, 200, 0.3);
+            }
+        }
+
+        .habit-card.just-completed {
+            animation: pulse 0.6s ease-out;
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: scale(0.95);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .check-mark.popup {
+            animation: popIn 0.4s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Hero Stats -->
+        <div class="hero-stats">
+            <div class="hero-content">
+                <div class="money-display" id="moneyDisplay">₪128</div>
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <div class="stat-label">Today</div>
+                        <div class="stat-value today-xp">+3</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Last Day</div>
+                        <div class="stat-value last-day-xp">0</div>
+                    </div>
+                   
+                </div>
+                <div class="streak">🔥 <span class="streak" id="streakC">0</span> day streak</div>
+            </div>
+        </div>
+
+        <!-- Habits Section -->
+        <div class="habits-section">
+            <div class="section-label">Daily Habits</div>
+            
+            <div class="habit-card" onclick="toggleHabit(this)">
+                <div class="habit-info">
+                    <div class="habit-icon">💪</div>
+                    <div class="habit-details">
+                        <h3>Workout</h3>
+                        <p>30 min session</p>
+                    </div>
+                </div>
+                <div class="habit-reward">+2 ₪</div>
+                <div class="check-mark">✓</div>
+            </div>
+
+            <div class="habit-card" onclick="toggleHabit(this)">
+                <div class="habit-info">
+                    <div class="habit-icon">🚶</div>
+                    <div class="habit-details">
+                        <h3>Walk</h3>
+                        <p>20 min</p>
+                    </div>
+                </div>
+                <div class="habit-reward">+1 ₪</div>
+                <div class="check-mark">✓</div>
+            </div>
+
+            <div class="habit-card completed" onclick="toggleHabit(this)">
+                <div class="habit-info">
+                    <div class="habit-icon">😴</div>
+                    <div class="habit-details">
+                        <h3>Sleep</h3>
+                        <p>8 hours target</p>
+                    </div>
+                </div>
+                <div class="habit-reward">+1 ₪</div>
+                <div class="check-mark">✓</div>
+            </div>
+        </div>
+
+        <!-- Screen Time Card -->
+        <div class="screen-time-card">
+            <div class="section-label">Instagram Screen Time (manual adjust)</div>
+            <div class="screen-time-header" style="flex-direction: column; align-items: flex-start; gap: 8px;">
+                <h3>Instagram</h3>
+                <div style="display: flex; gap: 12px; align-items: baseline;">
+                    <div class="screen-time-hours">2h 15m</div>
+                </div>
+            </div>
+            <div class="screen-time-bar" role="slider" aria-valuemin="0" aria-valuemax="600" aria-valuenow="135" tabindex="0">
+                <div class="screen-time-fill"></div>
+            </div>
+            <div class="screen-time-row">
+                <span>Penalty: <span class="penalty-value" id="penalty-value-id">-1 ₪</span></span>
+                <span>Net today: <span class="net-xp">+2 ₪</span></span>
+            </div>
+            <button onclick="saveLastDayXP()" style="margin-top: 12px; padding: 8px 12px; background:#00ffc8; color:#0a0e27; border:none; border-radius:8px; font-weight:700; cursor:pointer;">Save as Last Day</button>
+        </div>
+
+        
+
+    <!-- External JS bundle for app behaviour (moved from inline script) -->
+    <script src="script.js"></script>
+</body>
+</html>
