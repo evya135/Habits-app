@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="manifest" href="manifest.json">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0f172a">
+    <title>Charts & Analytics</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #0a0e27;
+            color: #ffffff;
+            padding: 16px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .header h1 {
+            color: #00ffc8;
+            font-size: 28px;
+            font-weight: 900;
+            margin-bottom: 8px;
+        }
+
+        .back-button {
+            background: rgba(0, 255, 200, 0.1);
+            border: 1px solid rgba(0, 255, 200, 0.3);
+            color: #00ffc8;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: rgba(0, 255, 200, 0.2);
+        }
+
+        .chart-container {
+            background: linear-gradient(135deg, #1a1f3a 0%, #16213e 100%);
+            border: 1px solid rgba(0, 255, 200, 0.2);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 24px;
+            position: relative;
+            height: 300px;
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #00ffc8;
+            margin-bottom: 16px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #1a1f3a 0%, #16213e 100%);
+            border: 1px solid rgba(0, 255, 200, 0.2);
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 900;
+            color: #00ffc8;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .habits-breakdown {
+            background: linear-gradient(135deg, #1a1f3a 0%, #16213e 100%);
+            border: 1px solid rgba(0, 255, 200, 0.2);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .habit-stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(0, 255, 200, 0.1);
+        }
+
+        .habit-stat-item:last-child {
+            border-bottom: none;
+        }
+
+        .habit-name {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .habit-icon {
+            font-size: 24px;
+        }
+
+        .habit-stats {
+            display: flex;
+            gap: 24px;
+            font-size: 14px;
+        }
+
+        .habit-completion-rate {
+            font-weight: 600;
+            color: #00ffc8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Analytics</h1>
+            <a href="settings.html" class="back-button">← Back to Settings</a>
+        </div>
+
+        <!-- Key Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="total-earned">0</div>
+                <div class="stat-label">Total ₪ Earned</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="current-bank">0</div>
+                <div class="stat-label">Current Bank</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="current-streak">0</div>
+                <div class="stat-label">Day Streak</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="total-days">0</div>
+                <div class="stat-label">Total Days Tracked</div>
+            </div>
+        </div>
+
+        <!-- XP Progress Chart -->
+        <div class="chart-container">
+            <div class="chart-title">Daily Progress (Last 30 days)</div>
+            <canvas id="xpChart"></canvas>
+        </div>
+
+        <!-- Habit Completion Chart -->
+        <div class="chart-container">
+            <div class="chart-title">Habit Completion Rate (Last 14 days)</div>
+            <canvas id="habitChart"></canvas>
+        </div>
+
+        <!-- Habit Breakdown -->
+        <div class="habits-breakdown">
+            <div class="chart-title">Habit Statistics</div>
+            <div id="habits-stats"></div>
+        </div>
+
+        <!-- Daily History Table (Last 7 days) -->
+        <div class="habits-breakdown">
+            <div class="chart-title">Weekly Summary (Last 7 days)</div>
+            <div id="weekly-summary"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        let xpChartInstance = null;
+        let habitChartInstance = null;
+
+        function updateCharts() {
+            const dailyHistory = JSON.parse(localStorage.getItem('dailyHistory') || '[]');
+            const habits = JSON.parse(localStorage.getItem('habits') || '[]');
+            const xpL = Number(localStorage.getItem('xpL') || 0);
+            const streak = Number(localStorage.getItem('streak') || 0);
+
+            // Update stats
+            const totalEarned = dailyHistory.reduce((sum, day) => sum + (day.netXP || 0), 0) + xpL;
+            document.getElementById('total-earned').textContent = totalEarned;
+            document.getElementById('current-bank').textContent = xpL;
+            document.getElementById('current-streak').textContent = streak;
+            document.getElementById('total-days').textContent = dailyHistory.length;
+
+            // Prepare data for XP chart (last 30 days)
+            const last30Days = dailyHistory.slice(-30);
+            const xpDates = last30Days.map(d => {
+                const date = new Date(d.date);
+                return (date.getMonth() + 1) + '/' + date.getDate();
+            });
+            const xpValues = last30Days.map(d => d.netXP || 0);
+
+            // XP Line Chart
+            const xpCtx = document.getElementById('xpChart').getContext('2d');
+            if (xpChartInstance) xpChartInstance.destroy();
+            
+            xpChartInstance = new Chart(xpCtx, {
+                type: 'line',
+                data: {
+                    labels: xpDates,
+                    datasets: [{
+                        label: 'Daily XP Earned',
+                        data: xpValues,
+                        borderColor: '#00ffc8',
+                        backgroundColor: 'rgba(0, 255, 200, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#00ffc8',
+                        pointBorderColor: '#1a1f3a',
+                        pointBorderWidth: 2,
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(0, 255, 200, 0.1)' },
+                            ticks: { color: '#888' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#888' }
+                        }
+                    }
+                }
+            });
+
+            // Habit Completion Chart (bar chart for last 14 days)
+            const last14Days = dailyHistory.slice(-14);
+            const completionDates = last14Days.map(d => {
+                const date = new Date(d.date);
+                return (date.getMonth() + 1) + '/' + date.getDate();
+            });
+            const completionRates = last14Days.map(d => {
+                return habits.length > 0 ? Math.round((d.habits.length / habits.length) * 100) : 0;
+            });
+
+            const habitCtx = document.getElementById('habitChart').getContext('2d');
+            if (habitChartInstance) habitChartInstance.destroy();
+            
+            habitChartInstance = new Chart(habitCtx, {
+                type: 'bar',
+                data: {
+                    labels: completionDates,
+                    datasets: [{
+                        label: 'Completion %',
+                        data: completionRates,
+                        backgroundColor: completionRates.map(rate => rate === 100 ? '#00c864' : '#00ffc8'),
+                        borderColor: 'rgba(0, 255, 200, 0.3)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'x',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: { color: 'rgba(0, 255, 200, 0.1)' },
+                            ticks: { color: '#888' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#888' }
+                        }
+                    }
+                }
+            });
+
+            // Habit statistics
+            renderHabitStats(habits, dailyHistory);
+
+            // Weekly summary
+            renderWeeklySummary(last14Days, habits);
+        }
+
+        function renderHabitStats(habits, dailyHistory) {
+            const statsDiv = document.getElementById('habits-stats');
+            
+            const habitStats = {};
+            habits.forEach(h => {
+                habitStats[h.name] = { completed: 0, total: 0, icon: h.icon };
+            });
+
+            dailyHistory.forEach(day => {
+                habits.forEach(h => {
+                    habitStats[h.name].total++;
+                    if (day.habits.includes(h.name)) {
+                        habitStats[h.name].completed++;
+                    }
+                });
+            });
+
+            statsDiv.innerHTML = Object.entries(habitStats).map(([name, stats]) => {
+                const rate = stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0;
+                return `
+                    <div class="habit-stat-item">
+                        <div class="habit-name">
+                            <div class="habit-icon">${stats.icon}</div>
+                            <span>${name}</span>
+                        </div>
+                        <div class="habit-stats">
+                            <span>${stats.completed}/${stats.total} completed</span>
+                            <span class="habit-completion-rate">${rate}%</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderWeeklySummary(last14Days, habits) {
+            const summaryDiv = document.getElementById('weekly-summary');
+            
+            summaryDiv.innerHTML = last14Days.map(day => {
+                const date = new Date(day.date);
+                const dateStr = formatDate(date);
+                const completionPercentage = habits.length > 0 ? Math.round((day.habits.length / habits.length) * 100) : 0;
+                const habitsStr = day.habits.length > 0 ? day.habits.join(', ') : 'None completed';
+                
+                return `
+                    <div class="habit-stat-item">
+                        <div>
+                            <div style="font-weight: 600;">${dateStr}</div>
+                            <div style="font-size: 12px; color: #888; margin-top: 4px;">${habitsStr}</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-weight: 600; color: #00ffc8;">${day.netXP >= 0 ? '+' : ''}${day.netXP} ₪</div>
+                            <div style="font-size: 12px; color: #888; margin-top: 4px;">${completionPercentage}% complete</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function formatDate(date) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+
+        // Initialize charts on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            updateCharts();
+            
+            // Refresh every 30 seconds
+            setInterval(updateCharts, 30000);
+        });
+    </script>
+</body>
+</html>

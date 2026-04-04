@@ -78,6 +78,7 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 16px;
+            margin-bottom: 16px;
         }
 
         .stat-item {
@@ -115,12 +116,47 @@
             margin-left: 4px;
         }
 
+        .week-card {
+            background: linear-gradient(135deg, #1a1f3a 0%, #16213e 100%);
+            border: 1px solid rgba(0, 255, 200, 0.2);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .week-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .week-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #00ffc8;
+        }
+
+        .week-stats {
+            display: flex;
+            gap: 16px;
+            font-size: 13px;
+            color: #ccc;
+        }
+
         .day-card {
             background: linear-gradient(135deg, #1a1f3a 0%, #16213e 100%);
             border: 1px solid rgba(0, 255, 200, 0.2);
             border-radius: 16px;
             padding: 16px;
             margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .day-card:hover {
+            border-color: rgba(0, 255, 200, 0.5);
+            box-shadow: 0 4px 16px rgba(0, 255, 200, 0.1);
         }
 
         .day-header {
@@ -148,6 +184,12 @@
             margin-bottom: 8px;
         }
 
+        .completion-rate {
+            font-size: 12px;
+            color: #00ffc8;
+            margin-bottom: 8px;
+        }
+
         .habits-list {
             display: flex;
             flex-wrap: wrap;
@@ -161,6 +203,41 @@
             border-radius: 6px;
             font-size: 12px;
             font-weight: 600;
+        }
+
+        .note-section {
+            background: rgba(255, 165, 0, 0.1);
+            border: 1px solid rgba(255, 165, 0, 0.2);
+            padding: 8px;
+            border-radius: 6px;
+            margin-top: 8px;
+            font-size: 12px;
+            color: #ffa500;
+        }
+
+        .month-breakdown {
+            background: rgba(0, 255, 200, 0.05);
+            border: 1px solid rgba(0, 255, 200, 0.15);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        .month-label {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 4px;
+        }
+
+        .month-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .month-stat {
+            font-size: 13px;
+            color: #00ffc8;
         }
 
         .withdrawals-list {
@@ -177,18 +254,57 @@
             margin-bottom: 8px;
         }
 
+        .milestone-item {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            color: #ffd700;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .milestone-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .milestone-reward {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
         .no-data {
             text-align: center;
             color: #666;
             font-style: italic;
             padding: 20px;
         }
+
+        .trend-indicator {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .trend-up {
+            background: rgba(0, 200, 100, 0.2);
+            color: #00c864;
+        }
+
+        .trend-down {
+            background: rgba(255, 107, 107, 0.2);
+            color: #ff6b6b;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>Habit History</h1>
+            <h1>History & Stats</h1>
             <a href="index.html" class="back-button">← Back to Tracker</a>
         </div>
 
@@ -203,11 +319,29 @@
                     <div class="stat-label">Total Withdrawn</div>
                     <div class="stat-value" id="total-withdrawn">0</div>
                 </div>
+                <div class="stat-item">
+                    <div class="stat-label">Avg Daily</div>
+                    <div class="stat-value" id="avg-daily">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Best Streak</div>
+                    <div class="stat-value" id="best-streak">0</div>
+                </div>
             </div>
         </div>
 
         <div class="history-section">
-            <div class="section-title">Daily History</div>
+            <div class="section-title">Monthly Statistics</div>
+            <div id="monthly-stats"></div>
+        </div>
+
+        <div class="history-section">
+            <div class="section-title">Weekly Summary</div>
+            <div id="weekly-summary"></div>
+        </div>
+
+        <div class="history-section">
+            <div class="section-title">Daily Detail</div>
             <div id="daily-history">
                 <div class="no-data">No history available yet.</div>
             </div>
@@ -219,50 +353,203 @@
                 <div class="no-data">No withdrawals yet.</div>
             </div>
         </div>
+
+        <div class="history-section">
+            <div class="section-title">Achievement Milestones</div>
+            <div id="milestones-history">
+                <div class="no-data">No milestones unlocked yet.</div>
+            </div>
+        </div>
+
+        <div class="history-section">
+            <div class="section-title">Best Times to Complete</div>
+            <div id="best-times">
+                <div class="no-data">Data not available yet.</div>
+            </div>
+        </div>
     </div>
 
     <script>
+        // Helper functions
+        function getDaysInMonth(date) {
+            return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+        }
+
+        function formatDate(date) {
+            const d = new Date(date);
+            const day = String(d.getDate()).padStart(2, '0');
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const year = d.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+
+        function getWeekStart(date) {
+            const d = new Date(date);
+            const day = d.getDay();
+            const diff = d.getDate() - day;
+            return new Date(d.setDate(diff));
+        }
+
         // Load and display history
         function loadHistory() {
             const dailyHistory = JSON.parse(localStorage.getItem('dailyHistory') || '[]');
             const withdrawals = JSON.parse(localStorage.getItem('withdrawals') || '[]');
+            const completionTimes = JSON.parse(localStorage.getItem('completionTimes') || '[]');
+            const habitNotes = JSON.parse(localStorage.getItem('habitNotes') || '{}');
+
+            if (dailyHistory.length === 0) return;
 
             // Calculate totals
             const totalEarned = dailyHistory.reduce((sum, day) => sum + (day.earned || 0), 0);
             const totalWithdrawn = withdrawals.reduce((sum, w) => sum + w.amount, 0);
+            const avgDaily = Math.round(totalEarned / dailyHistory.length * 100) / 100;
 
             document.getElementById('total-earned').textContent = totalEarned;
             document.getElementById('total-withdrawn').textContent = totalWithdrawn;
+            document.getElementById('avg-daily').textContent = avgDaily;
 
-            // Display daily history
+            // Monthly stats
+            const monthlyData = {};
+            dailyHistory.forEach(day => {
+                const date = new Date(day.date);
+                const monthKey = `${date.getFullYear()}-${date.getMonth()}`;
+                if (!monthlyData[monthKey]) {
+                    monthlyData[monthKey] = { earned: 0, completed: 0, total: 0 };
+                }
+                monthlyData[monthKey].earned += day.earned || 0;
+                monthlyData[monthKey].completed += day.habits.length;
+                monthlyData[monthKey].total += 3; // Assuming 3 habits per day
+            });
+
+            const monthlyContainer = document.getElementById('monthly-stats');
+            monthlyContainer.innerHTML = Object.entries(monthlyData).reverse().map(([month, data]) => {
+                const [year, m] = month.split('-');
+                const monthName = new Date(year, m).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+                const completionRate = Math.round((data.completed / data.total) * 100);
+                return `
+                    <div class="month-breakdown">
+                        <div class="month-label">${monthName}</div>
+                        <div class="month-stats">
+                            <div class="month-stat">Earned: ₪${data.earned}</div>
+                            <div class="month-stat">Completion: ${completionRate}%</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Weekly summary
+            const weeklyData = {};
+            dailyHistory.forEach(day => {
+                const weekStart = getWeekStart(new Date(day.date));
+                const weekKey = weekStart.toDateString();
+                if (!weeklyData[weekKey]) {
+                    weeklyData[weekKey] = { earned: 0, days: 0, habits: 0 };
+                }
+                weeklyData[weekKey].earned += day.earned || 0;
+                weeklyData[weekKey].days += 1;
+                weeklyData[weekKey].habits += day.habits.length;
+            });
+
+            const weeklySummary = document.getElementById('weekly-summary');
+            weeklySummary.innerHTML = Object.entries(weeklyData).reverse().map(([week, data]) => `
+                <div class="week-card">
+                    <div class="week-header">
+                        <div class="week-title">Week of ${formatDate(week)}</div>
+                        <div>₪${data.earned}</div>
+                    </div>
+                    <div class="week-stats">
+                        <span>${data.days} days active</span>
+                        <span>${data.habits}/21 habits completed</span>
+                    </div>
+                </div>
+            `).join('');
+
+            // Daily history with completion rates and notes
             const dailyContainer = document.getElementById('daily-history');
-            if (dailyHistory.length > 0) {
-                dailyContainer.innerHTML = dailyHistory.map(day => `
+            let bestStreak = 0;
+            let currentStreak = 0;
+            
+            dailyHistory.forEach(day => {
+                if (day.earned > 0) {
+                    currentStreak++;
+                    bestStreak = Math.max(bestStreak, currentStreak);
+                } else {
+                    currentStreak = 0;
+                }
+            });
+            document.getElementById('best-streak').textContent = bestStreak;
+
+            dailyContainer.innerHTML = dailyHistory.reverse().map(day => {
+                const completionRate = Math.round((day.habits.length / 3) * 100);
+                const noteKey = day.date;
+                const note = habitNotes[noteKey];
+                return `
                     <div class="day-card">
                         <div class="day-header">
-                            <div class="day-date">${new Date(day.date).toLocaleDateString()}</div>
-                            <div class="day-earned">+${day.earned || 0} ₪</div>
+                            <div class="day-date">${formatDate(day.date)}</div>
+                            <div class="day-earned">+${day.earned} ₪</div>
                         </div>
+                        <div class="completion-rate">Habits: ${completionRate}% (${day.habits.length}/3)</div>
                         <div class="day-details">
-                            Instagram: ${day.instagramMinutes || 0} min | Net XP: ${day.netXP || 0}
+                            Instagram: ${day.instagramMinutes || 0} min | Net ₪: ${day.netXP || 0}
                         </div>
                         <div class="habits-list">
                             ${day.habits && day.habits.length > 0 ? 
                                 day.habits.map(habit => `<span class="habit-tag">${habit}</span>`).join('') : 
                                 '<span class="habit-tag">No habits completed</span>'}
                         </div>
+                        ${note ? `<div class="note-section">📝 ${note}</div>` : ''}
+                    </div>
+                `;
+            }).join('');
+
+            // Withdrawal history
+            const withdrawalContainer = document.getElementById('withdrawal-history');
+            if (withdrawals.length > 0) {
+                withdrawalContainer.innerHTML = withdrawals.reverse().map(w => `
+                    <div class="withdrawal-item">
+                        ${formatDate(w.date)} - Withdrew ₪${w.amount}
                     </div>
                 `).join('');
             }
 
-            // Display withdrawal history
-            const withdrawalContainer = document.getElementById('withdrawal-history');
-            if (withdrawals.length > 0) {
-                withdrawalContainer.innerHTML = withdrawals.map(w => `
-                    <div class="withdrawal-item">
-                        ${new Date(w.date).toLocaleDateString()} - Withdrew ₪${w.amount}
+            // Milestone achievements
+            const milestonesContainer = document.getElementById('milestones-history');
+            const milestones = JSON.parse(localStorage.getItem('milestones') || '[]');
+            if (milestones.length > 0) {
+                milestonesContainer.innerHTML = milestones.reverse().map(m => `
+                    <div class="milestone-item">
+                        <div class="milestone-name">${m.name}</div>
+                        <div class="milestone-reward">💰 Reward: +${m.reward} ₪ | 📅 ${formatDate(m.date)}</div>
                     </div>
                 `).join('');
+            }
+
+            // Best times to complete habits
+            if (completionTimes.length > 0) {
+                const hourCounts = {};
+                const habits = ['Workout', 'Walk', 'Sleep'];
+                const habitCounts = { 0: {}, 1: {}, 2: {} };
+
+                completionTimes.forEach(ct => {
+                    if (!hourCounts[ct.hour]) hourCounts[ct.hour] = 0;
+                    hourCounts[ct.hour]++;
+                    if (!habitCounts[ct.habit][ct.hour]) habitCounts[ct.habit][ct.hour] = 0;
+                    habitCounts[ct.habit][ct.hour]++;
+                });
+
+                const bestHour = Object.entries(hourCounts).sort((a, b) => b[1] - a[1])[0];
+                const bestTimesContainer = document.getElementById('best-times');
+                
+                if (bestHour) {
+                    const timeStr = `${bestHour[0]}:00 - ${parseInt(bestHour[0])+1}:00`;
+                    bestTimesContainer.innerHTML = `
+                        <div class="month-breakdown">
+                            <div class="month-label">Peak Completion Hour</div>
+                            <div style="color: #00ffc8; font-size: 14px;">${timeStr} (${bestHour[1]} completions)</div>
+                        </div>
+                    `;
+                }
             }
         }
 

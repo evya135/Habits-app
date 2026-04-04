@@ -1,0 +1,56 @@
+/* Modern, fun, and animated styles for Habit Tracker */
+
+/* Achievement unlock animation */
+@keyframes achievement-pop {
+  0% { transform: scale(0.7); opacity: 0.2; }
+  60% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.achievement-badge.celebration {
+  animation: achievement-pop 0.7s cubic-bezier(0.23, 1.1, 0.32, 1) both;
+  box-shadow: 0 0 16px 2px #00ffc8, 0 0 0 4px #1a1f3a;
+  background: linear-gradient(90deg, #00ffc8 0%, #00d9ff 100%);
+  color: #0a0e27 !important;
+}
+
+/* Habit completion animation */
+@keyframes habit-complete-bounce {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.15); }
+  60% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+.habit-card.just-completed {
+  animation: habit-complete-bounce 0.5s cubic-bezier(0.23, 1.1, 0.32, 1) both;
+  box-shadow: 0 0 12px 2px #00ffc8;
+}
+
+.check-mark.popup {
+  animation: achievement-pop 0.5s cubic-bezier(0.23, 1.1, 0.32, 1) both;
+  color: #00ffc8;
+  font-size: 1.5em;
+}
+
+/* Calendar day highlight */
+.calendar-day.completed {
+  background: #00ffc8 !important;
+  color: #0a0e27 !important;
+  border-radius: 50%;
+  font-weight: bold;
+  box-shadow: 0 0 8px #00ffc8;
+}
+
+/* Modern dropdowns */
+select.modern-dropdown {
+  background: #1a1f3a;
+  color: #00ffc8;
+  border: 1px solid #00ffc8;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 1em;
+  outline: none;
+  transition: border 0.2s;
+}
+select.modern-dropdown:focus {
+  border: 2px solid #00d9ff;
+}

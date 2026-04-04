@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habit Calendar</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { background: #0a0a0a; color: #fff; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 0; }
+        .container { max-width: 700px; margin: 40px auto; background: rgba(0,255,200,0.07); border-radius: 18px; box-shadow: 0 4px 32px #00ffc822; padding: 32px 24px 24px 24px; }
+        h1 { text-align: center; color: #00ffc8; margin-bottom: 32px; }
+        .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+        .calendar-day { background: rgba(0,255,200,0.08); border: 1px solid rgba(0,255,200,0.18); border-radius: 8px; min-height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 14px; transition: box-shadow 0.2s; position: relative; }
+        .calendar-day.completed { background: #00ffc8; color: #0a0a0a; font-weight: bold; }
+        .calendar-day.today { border: 2px solid #ffe066; }
+        .calendar-day .habit-icons { margin-top: 4px; font-size: 18px; }
+        .calendar-header { display: grid; grid-template-columns: repeat(7, 1fr); margin-bottom: 8px; color: #00ffc8; font-weight: 600; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Habit Calendar</h1>
+        <div class="calendar-header">
+            <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+        </div>
+        <div id="calendar" class="calendar"></div>
+        <div style="text-align:center;margin-top:24px;">
+            <a href="index.html" style="color:#00ffc8;text-decoration:none;font-size:14px;">← Back to App</a>
+        </div>
+    </div>
+    <script src="script.js"></script>
+    <script>
+    function renderHabitCalendarView() {
+        const calendar = document.getElementById('calendar');
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = today.getMonth();
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+        const startDay = firstDay.getDay();
+        const daysInMonth = lastDay.getDate();
+        const dailyHistory = JSON.parse(localStorage.getItem('dailyHistory') || '[]');
+        const habits = JSON.parse(localStorage.getItem('habits') || '[]');
+        calendar.innerHTML = '';
+        // Fill blanks for first week
+        for (let i = 0; i < startDay; i++) {
+            const blank = document.createElement('div');
+            blank.className = 'calendar-day';
+            calendar.appendChild(blank);
+        }
+        for (let d = 1; d <= daysInMonth; d++) {
+            const date = new Date(year, month, d);
+            const dateStr = date.toISOString().split('T')[0];
+            const dayDiv = document.createElement('div');
+            dayDiv.className = 'calendar-day';
+            if (d === today.getDate()) dayDiv.classList.add('today');
+            // Find history for this day
+            const hist = dailyHistory.find(h => {
+                const hd = new Date(h.date);
+                return hd.getFullYear() === year && hd.getMonth() === month && hd.getDate() === d;
+            });
+            if (hist && hist.habits && hist.habits.length === habits.length && habits.length > 0) {
+                dayDiv.classList.add('completed');
+            }
+            dayDiv.innerHTML = `<div>${d}</div>`;
+            if (hist && hist.habits && hist.habits.length > 0) {
+                const icons = habits.filter(h => hist.habits.includes(h.name)).map(h => h.icon).join(' ');
+                dayDiv.innerHTML += `<div class='habit-icons'>${icons}</div>`;
+            }
+            calendar.appendChild(dayDiv);
+        }
+    }
+    document.addEventListener('DOMContentLoaded', renderHabitCalendarView);
+    </script>
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Milestones</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background: #0a0a0a;
+            color: #fff;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 700px;
+            margin: 40px auto;
+            background: rgba(0,255,200,0.07);
+            border-radius: 18px;
+            box-shadow: 0 4px 32px #00ffc822;
+            padding: 32px 24px 24px 24px;
+        }
+        h1 {
+            text-align: center;
+            color: #00ffc8;
+            margin-bottom: 32px;
+        }
+        .milestone {
+            background: rgba(0,255,200,0.08);
+            border: 1px solid rgba(0,255,200,0.18);
+            border-radius: 12px;
+            margin-bottom: 18px;
+            padding: 18px 16px;
+            transition: box-shadow 0.2s;
+        }
+        .milestone:hover {
+            box-shadow: 0 2px 16px #00ffc822;
+        }
+        .milestone-title {
+            font-size: 1.15em;
+            font-weight: 600;
+            color: #00ffc8;
+        }
+        .milestone-desc {
+            font-size: 0.98em;
+            color: #b0f7e6;
+            margin-top: 6px;
+        }
+        .milestone-reward {
+            font-size: 0.95em;
+            color: #ffe066;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>All Milestones & Explanations</h1>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <a href="index.html" style="color:#00ffc8;text-decoration:none;font-size:14px;">← Back to App</a>
+            <div style="display:flex;gap:16px;align-items:center;">
+                <div>
+                    <label for="sort-select" style="color:#b0f7e6;font-size:14px;margin-right:8px;">Sort by:</label>
+                    <select id="sort-select" style="padding:4px 8px;border-radius:6px;">
+                        <option value="type">Type</option>
+                        <option value="target">Target</option>
+                        <option value="reward">Reward</option>
+                        <option value="name">Name</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="filter-select" style="color:#b0f7e6;font-size:14px;margin-right:8px;">Show:</label>
+                    <select id="filter-select" style="padding:4px 8px;border-radius:6px;">
+                        <option value="all">All</option>
+                        <option value="locked">Locked</option>
+                        <option value="unlocked">Unlocked</option>
+                        <option value="funny">Funny Only</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div id="milestones-list"></div>
+    </div>
+    <script src="script.js"></script>
+    <script>
+        // Explanations for each type
+        const TYPE_EXPLANATIONS = {
+            total: 'Earn a total amount of ₪ by completing habits.',
+            streak: 'Maintain a daily streak of completing at least one habit.',
+            perfectday: 'Complete all your habits in a single day.',
+            'perfectday-multi': 'Complete all your habits for multiple consecutive days.',
+            withdrawal: 'Make a withdrawal from your bank.',
+            'withdrawal-amount': 'Withdraw a total amount of ₪ from your bank.',
+            'screen-time': 'Limit your social media or screen time.',
+            'wake-time': 'Wake up early in the morning.',
+            'bed-time': 'Stay up late at night.',
+            coffee: 'Drink coffee (sometimes too much!).',
+            'completion-time': 'Complete all habits quickly in a day.',
+            'exact-total': 'Reach an exact total ₪ amount.',
+            'habit-count': 'Have a certain number of active habits.',
+            'weekend-perfect': 'Complete all habits on a weekend.',
+            'monday-start': 'Start a new habit on a Monday.',
+            'last-minute': 'Complete a habit at the last minute.',
+            messages: 'Send messages (for social or accountability).',
+            'late-eating': 'Eat something after midnight.',
+            'habit-redo': 'Redo a habit multiple times in a day.',
+            'dance-session': 'Have a spontaneous dance party.',
+            'shower-songs': 'Sing songs in the shower.',
+            'pet-playtime': 'Spend time with a pet.',
+            'weird-recipe': 'Try cooking something new and weird.',
+            'cloud-shapes': 'Spot shapes in clouds.',
+            'good-deed': 'Do a random act of kindness.',
+            'dream-log': 'Record dreams in a journal.',
+            'jigsaw-complete': 'Complete a jigsaw puzzle.',
+            'constellation-spot': 'Spot a constellation.',
+            'old-photos': 'Look through old family photos.'
+        };
+        // Wait for script.js to load ACHIEVEMENTS
+        function getDisabledMilestones() {
+            return JSON.parse(localStorage.getItem('disabledMilestones') || '[]');
+        }
+        function setDisabledMilestones(arr) {
+            localStorage.setItem('disabledMilestones', JSON.stringify(arr));
+        }
+        function renderMilestones(sortBy = 'type', filterBy = 'all') {
+            if (typeof ACHIEVEMENTS === 'undefined') {
+                document.getElementById('milestones-list').innerHTML = '<div style="color:#f66;">Could not load milestones.</div>';
+                return;
+            }
+            const unlocked = JSON.parse(localStorage.getItem('achievements') || '[]');
+            const disabled = getDisabledMilestones();
+            let sorted = [...ACHIEVEMENTS];
+            if (sortBy === 'type') {
+                const typeOrder = {
+                    total: 1, streak: 2, perfectday: 3, 'perfectday-multi': 4, withdrawal: 5, 'withdrawal-amount': 6,
+                    'screen-time': 7, 'wake-time': 8, 'bed-time': 9, coffee: 10, 'completion-time': 11, 'exact-total': 12,
+                    'habit-count': 13, 'weekend-perfect': 14, 'monday-start': 15, 'last-minute': 16, messages: 17,
+                    'late-eating': 18, 'habit-redo': 19, 'dance-session': 20, 'shower-songs': 21, 'pet-playtime': 22,
+                    'weird-recipe': 23, 'cloud-shapes': 24, 'good-deed': 25, 'dream-log': 26, 'jigsaw-complete': 27,
+                    'constellation-spot': 28, 'old-photos': 29
+                };
+                sorted.sort((a, b) => (typeOrder[a.type]||99)-(typeOrder[b.type]||99) || a.target-b.target);
+            } else if (sortBy === 'target') {
+                sorted.sort((a, b) => a.target - b.target);
+            } else if (sortBy === 'reward') {
+                sorted.sort((a, b) => b.reward - a.reward);
+            } else if (sortBy === 'name') {
+                sorted.sort((a, b) => a.name.localeCompare(b.name));
+            }
+            if (filterBy === 'locked') {
+                sorted = sorted.filter(m => !unlocked.includes(m.id));
+            } else if (filterBy === 'unlocked') {
+                sorted = sorted.filter(m => unlocked.includes(m.id));
+            } else if (filterBy === 'funny') {
+                const funnyTypes = [
+                    'withdrawal', 'withdrawal-amount', 'screen-time', 'coffee', 'bed-time', 'completion-time', 'habit-redo',
+                    'dance-session', 'shower-songs', 'pet-playtime', 'weird-recipe', 'cloud-shapes', 'good-deed', 'dream-log',
+                    'jigsaw-complete', 'constellation-spot', 'old-photos', 'late-eating', 'last-minute', 'messages', 'habit-count'
+                ];
+                sorted = sorted.filter(m => funnyTypes.includes(m.type) || /alien|potato|phoenix|emoji|party|queen|machine|addict|owl|bird|butterfly|snack|experiment|puzzle|stargazer|memory|random|kindness|shower|pet|cloud|dance|procrastinator|hoarder|warrior|motivation|perfectionist/i.test(m.name));
+            }
+            const list = document.getElementById('milestones-list');
+            list.innerHTML = sorted.map(m => {
+                const isUnlocked = unlocked.includes(m.id);
+                const isDisabled = disabled.includes(m.id);
+                return `
+                <div class="milestone" style="opacity:${isDisabled ? 0.4 : 1}; position:relative;">
+                    <div class="milestone-title">${m.name} ${isUnlocked ? (isDisabled ? '<span style=\"color:#f66;font-size:12px;\">(Disabled)</span>' : '<span style=\"color:#ffe066;font-size:12px;\">(Unlocked)</span>') : ''}</div>
+                    <div class="milestone-desc">${TYPE_EXPLANATIONS[m.type] || 'Special milestone.'}</div>
+                    <div class="milestone-reward">Target: <b>${m.target}</b> &nbsp;|&nbsp; Reward: <b>+${m.reward} ₪</b></div>
+                    ${isUnlocked ? `<button onclick=\"toggleMilestone('${m.id}')\" style=\"position:absolute;top:16px;right:16px;padding:4px 10px;border-radius:6px;border:none;background:${isDisabled ? '#00ffc8' : '#f66'};color:#0a0a0a;font-weight:600;cursor:pointer;\">${isDisabled ? 'Enable' : 'Disable'}</button>` : ''}
+                </div>
+                `;
+            }).join('');
+        }
+        function toggleMilestone(id) {
+            let disabled = getDisabledMilestones();
+            if (disabled.includes(id)) {
+                disabled = disabled.filter(x => x !== id);
+            } else {
+                disabled.push(id);
+            }
+            setDisabledMilestones(disabled);
+            // Re-render with current sort/filter
+            renderMilestones(document.getElementById('sort-select').value, document.getElementById('filter-select').value);
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                renderMilestones('type', 'all');
+                document.getElementById('sort-select').addEventListener('change', function() {
+                    renderMilestones(this.value, document.getElementById('filter-select').value);
+                });
+                document.getElementById('filter-select').addEventListener('change', function() {
+                    renderMilestones(document.getElementById('sort-select').value, this.value);
+                });
+                window.toggleMilestone = toggleMilestone;
+            }, 100);
+        });
+    </script>
+</body>
+</html>

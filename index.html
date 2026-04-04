@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+        <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon-192.png">
     <meta name="theme-color" content="#0f172a">
@@ -91,6 +92,42 @@
             transform: translateY(-1px);
         }
 
+        .setting-button {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: linear-gradient(135deg, rgba(0, 255, 200, 0.2) 0%, rgba(0, 255, 200, 0.1) 100%);
+            border: 2px solid rgba(0, 255, 200, 0.4);
+            color: #00ffc8;
+            padding: 14px 18px;
+            border-radius: 50%;
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            opacity: 0.9;
+            z-index: 100;
+            box-shadow: 0 4px 16px rgba(0, 255, 200, 0.15);
+            cursor: pointer;
+        }
+
+        .setting-button:hover {
+            background: linear-gradient(135deg, rgba(0, 255, 200, 0.3) 0%, rgba(0, 255, 200, 0.2) 100%);
+            border-color: rgba(0, 255, 200, 0.6);
+            opacity: 1;
+            transform: scale(1.1) translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 255, 200, 0.25);
+        }
+
+        .setting-button:active {
+            transform: scale(0.95);
+        }
+
         .hero-stats::before {
             content: '';
             position: absolute;
@@ -149,6 +186,146 @@
             font-size: 14px;
             color: #ffa500;
             margin-top: 12px;
+        }
+
+        .goal-section {
+            background: rgba(0, 255, 200, 0.05);
+            border: 1px solid rgba(0, 255, 200, 0.15);
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .goal-label {
+            font-size: 12px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .goal-info {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .goal-input {
+            width: 60px;
+            padding: 6px;
+            background: rgba(0, 255, 200, 0.1);
+            border: 1px solid rgba(0, 255, 200, 0.3);
+            color: #00ffc8;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .goal-progress {
+            font-size: 13px;
+            color: #00ffc8;
+            font-weight: 600;
+        }
+
+
+
+        .streak-display {
+            background: linear-gradient(135deg, rgba(255, 165, 0, 0.2) 0%, rgba(255, 165, 0, 0.1) 100%);
+            border: 1px solid rgba(255, 165, 0, 0.3);
+            border-radius: 12px;
+            padding: 12px 16px;
+            text-align: center;
+            margin-top: 12px;
+        }
+
+        .streak-number {
+            font-size: 32px;
+            font-weight: 900;
+            color: #ffa500;
+        }
+
+        .streak-label {
+            font-size: 12px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .achievements-section {
+            background: rgba(0, 255, 200, 0.05);
+            border: 1px solid rgba(0, 255, 200, 0.15);
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 16px;
+        }
+
+        .achievements-title {
+            font-size: 12px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .achievements-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .achievement-badge {
+            background: rgba(255, 215, 0, 0.15);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            color: #ffd700;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .achievement-badge:hover {
+            background: rgba(255, 215, 0, 0.25);
+            border-color: rgba(255, 215, 0, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.2);
+        }
+
+        .achievement-badge.locked {
+            background: rgba(100, 100, 100, 0.1);
+            border-color: rgba(100, 100, 100, 0.2);
+            color: #666;
+            opacity: 0.6;
+        }
+
+        .achievement-badge.locked:hover {
+            background: rgba(100, 100, 100, 0.15);
+            border-color: rgba(100, 100, 100, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .celebration {
+            animation: celebrate 0.8s ease-out;
+        }
+
+        @keyframes celebrate {
+            0% {
+                transform: scale(0.5) rotateZ(-10deg);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.1) rotateZ(5deg);
+            }
+            100% {
+                transform: scale(1) rotateZ(0deg);
+                opacity: 1;
+            }
         }
 
         /* Habit Cards */
@@ -463,10 +640,22 @@
             background: rgba(255, 165, 0, 0.2);
             border-color: rgba(255, 165, 0, 0.5);
         }
+
+        #close-milestone {
+            background: rgba(0, 255, 200, 0.1);
+            border: 1px solid rgba(0, 255, 200, 0.3);
+            color: #00ffc8;
+        }
+
+        #close-milestone:hover {
+            background: rgba(0, 255, 200, 0.2);
+            border-color: rgba(0, 255, 200, 0.5);
+            transform: translateY(-1px);
+        }
     </style>
 </head>
 <body>
-    <div class="container">
+        <div class="container">
         <!-- Hero Stats -->
         <div class="hero-stats">
             <a href="history.html" class="history-button">History</a>
@@ -484,49 +673,27 @@
                     </div>
                    
                 </div>
-                <div class="streak">🔥 <span class="streak" id="streakC">0</span> day streak</div>
+                <div class="streak-display">
+                    <div class="streak-number" id="streakNumber">0</div>
+                    <div class="streak-label">🔥 Day Streak</div>
+                    <button id="freeze-streak-btn" style="margin-top:10px;padding:6px 16px;background:#ffe066;color:#0a0a0a;border:none;border-radius:8px;font-weight:700;cursor:pointer;">Freeze Streak (3₪)</button>
+                </div>
+
+                <div class="achievements-section">
+                    <div class="achievements-title">Milestones</div>
+                    <div class="achievements-list" id="achievementsList"></div>
+                </div>
             </div>
         </div>
 
         <!-- Habits Section -->
         <div class="habits-section">
             <div class="section-label">Daily Habits</div>
-            
-            <div class="habit-card" onclick="toggleHabit(this)">
-                <div class="habit-info">
-                    <div class="habit-icon">💪</div>
-                    <div class="habit-details">
-                        <h3>Workout</h3>
-                        <p>30 min session</p>
-                    </div>
-                </div>
-                <div class="habit-reward">+2 ₪</div>
-                <div class="check-mark">✓</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <span style="font-size: 12px; color: #666;"></span>
+                <a href="settings.html" style="font-size: 12px; color: #00ffc8; text-decoration: none; padding: 4px 8px; border: 1px solid rgba(0, 255, 200, 0.3); border-radius: 6px; cursor: pointer;">+ Add Habit</a>
             </div>
-
-            <div class="habit-card" onclick="toggleHabit(this)">
-                <div class="habit-info">
-                    <div class="habit-icon">🚶</div>
-                    <div class="habit-details">
-                        <h3>Walk</h3>
-                        <p>20 min</p>
-                    </div>
-                </div>
-                <div class="habit-reward">+1 ₪</div>
-                <div class="check-mark">✓</div>
-            </div>
-
-            <div class="habit-card completed" onclick="toggleHabit(this)">
-                <div class="habit-info">
-                    <div class="habit-icon">😴</div>
-                    <div class="habit-details">
-                        <h3>Sleep</h3>
-                        <p>8 hours target</p>
-                    </div>
-                </div>
-                <div class="habit-reward">+1 ₪</div>
-                <div class="check-mark">✓</div>
-            </div>
+            <div class="habits-list"></div>
         </div>
 
         <!-- Screen Time Card -->
@@ -548,7 +715,11 @@
             <button onclick="saveLastDayXP()" style="margin-top: 12px; padding: 8px 12px; background:#00ffc8; color:#0a0e27; border:none; border-radius:8px; font-weight:700; cursor:pointer;">Save as Last Day</button>
         </div>
 
-        
+        <!-- Settings Button -->
+        <div style="position: fixed; bottom: 24px; right: 24px; display: flex; gap: 16px; z-index: 100;">
+            <a href="calendar.html" class="setting-button" style="right: 88px;">📅</a>
+            <a href="settings.html" class="setting-button">⚙️</a>
+        </div>
 
         <!-- Withdraw Modal -->
         <div id="withdraw-modal" class="modal">
@@ -570,6 +741,66 @@
                 <p id="notification-message"></p>
                 <div class="modal-buttons">
                     <button id="notification-ok">OK</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Withdrawals (Undo Option) -->
+        <div id="recent-withdrawals-modal" class="modal">
+            <div class="modal-content">
+                <h3>Recent Withdrawals</h3>
+                <div id="withdrawals-list" style="max-height: 300px; overflow-y: auto; margin-bottom: 16px;"></div>
+                <div class="modal-buttons">
+                    <button id="close-withdrawals">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Habit Notes Modal -->
+        <div id="habit-notes-modal" class="modal">
+            <div class="modal-content">
+                <h3>Add Note</h3>
+                <p id="note-date-display"></p>
+                <textarea id="habit-note-input" placeholder="Add a note (optional)" style="width: 100%; height: 100px; padding: 12px; border: 1px solid rgba(0, 255, 200, 0.3); background: rgba(0, 255, 200, 0.05); color: #fff; border-radius: 8px; font-family: inherit; margin-bottom: 16px; resize: none;"></textarea>
+                <div class="modal-buttons">
+                    <button id="save-note" style="background: #00ffc8; color: #0a0e27;">Save</button>
+                    <button id="close-note" style="background: rgba(255, 165, 0, 0.1); border: 1px solid rgba(255, 165, 0, 0.3); color: #ffa500;">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Milestone Details Modal -->
+        <div id="milestone-modal" class="modal">
+            <div class="modal-content">
+                <h3 id="milestone-title">Milestone</h3>
+                <div id="milestone-details" style="text-align: left; margin-bottom: 16px;">
+                    <div style="margin-bottom: 12px;">
+                        <span style="color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Target</span>
+                        <p id="milestone-target" style="color: #00ffc8; font-size: 14px; margin-top: 4px;"></p>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <span style="color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Reward</span>
+                        <p id="milestone-reward" style="color: #ffd700; font-size: 14px; margin-top: 4px;"></p>
+                    </div>
+                    <div>
+                        <span style="color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Status</span>
+                        <p id="milestone-status" style="color: #00ffc8; font-size: 14px; margin-top: 4px;"></p>
+                    </div>
+                </div>
+                <div class="modal-buttons">
+                    <button id="close-milestone">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Unlocked Milestones Modal -->
+        <div id="unlocked-milestones-modal" class="modal">
+            <div class="modal-content" style="max-height: 80vh; overflow-y: auto;">
+                <h3>🏆 Your Achievements</h3>
+                <p style="color: #888; font-size: 12px; margin-bottom: 16px;">Click any achievement to see details</p>
+                <div id="unlocked-milestones-list"></div>
+                <div class="modal-buttons">
+                    <button onclick="document.getElementById('unlocked-milestones-modal').style.display = 'none'">Close</button>
                 </div>
             </div>
         </div>
