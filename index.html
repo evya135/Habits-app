@@ -30,7 +30,6 @@
             margin: 0 auto;
         }
 
-        /* Hero Stats Card */
         .hero-stats {
             background: linear-gradient(135deg, #1a1f3a 0%, #16213e 100%);
             border: 1px solid rgba(0, 255, 200, 0.2);
@@ -40,6 +39,56 @@
             box-shadow: 0 8px 32px rgba(0, 255, 200, 0.1);
             position: relative;
             overflow: hidden;
+        }
+
+        .withdraw-button {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: rgba(255, 165, 0, 0.1);
+            border: 1px solid rgba(255, 165, 0, 0.3);
+            color: #ffa500;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0.8;
+        }
+
+        .withdraw-button:hover {
+            background: rgba(255, 165, 0, 0.2);
+            border-color: rgba(255, 165, 0, 0.5);
+            opacity: 1;
+            transform: translateY(-1px);
+        }
+
+        .history-button {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background: rgba(0, 255, 200, 0.1);
+            border: 1px solid rgba(0, 255, 200, 0.3);
+            color: #00ffc8;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            opacity: 0.8;
+        }
+
+        .history-button:hover {
+            background: rgba(0, 255, 200, 0.2);
+            border-color: #00ffc8;
+            opacity: 1;
+            transform: translateY(-1px);
         }
 
         .hero-stats::before {
@@ -320,8 +369,99 @@
             }
         }
 
-        .check-mark.popup {
-            animation: popIn 0.4s ease-out;
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a1f3a 0%, #16213e 100%);
+            border: 1px solid rgba(0, 255, 200, 0.2);
+            border-radius: 20px;
+            margin: 20% auto;
+            padding: 24px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 8px 32px rgba(0, 255, 200, 0.1);
+            text-align: center;
+        }
+
+        .modal-content h3 {
+            color: #00ffc8;
+            margin-bottom: 16px;
+            font-size: 20px;
+        }
+
+        .modal-content p {
+            color: #ffffff;
+            margin-bottom: 16px;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(0, 255, 200, 0.3);
+            border-radius: 8px;
+            background: rgba(0, 255, 200, 0.05);
+            color: #ffffff;
+            font-size: 16px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+
+        .modal-content input::placeholder {
+            color: #888;
+        }
+
+        .modal-content input:focus {
+            outline: none;
+            border-color: #00ffc8;
+            box-shadow: 0 0 0 2px rgba(0, 255, 200, 0.2);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .modal-buttons button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+
+        #withdraw-confirm {
+            background: #00ffc8;
+            color: #0a0e27;
+        }
+
+        #withdraw-confirm:hover {
+            background: #00d9ff;
+            transform: translateY(-1px);
+        }
+
+        #withdraw-cancel {
+            background: rgba(255, 165, 0, 0.1);
+            border: 1px solid rgba(255, 165, 0, 0.3);
+            color: #ffa500;
+        }
+
+        #withdraw-cancel:hover {
+            background: rgba(255, 165, 0, 0.2);
+            border-color: rgba(255, 165, 0, 0.5);
         }
     </style>
 </head>
@@ -329,6 +469,8 @@
     <div class="container">
         <!-- Hero Stats -->
         <div class="hero-stats">
+            <a href="history.html" class="history-button">History</a>
+            <div class="withdraw-button" onclick="withdrawMoney()">Withdraw</div>
             <div class="hero-content">
                 <div class="money-display" id="moneyDisplay">₪128</div>
                 <div class="stats-row">
@@ -407,6 +549,30 @@
         </div>
 
         
+
+        <!-- Withdraw Modal -->
+        <div id="withdraw-modal" class="modal">
+            <div class="modal-content">
+                <h3>Withdraw Money</h3>
+                <p id="withdraw-max-text">Enter amount to withdraw:</p>
+                <input type="number" id="withdraw-amount" placeholder="Amount" min="1">
+                <div class="modal-buttons">
+                    <button id="withdraw-confirm">Withdraw</button>
+                    <button id="withdraw-cancel">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notification Modal -->
+        <div id="notification-modal" class="modal">
+            <div class="modal-content">
+                <h3 id="notification-title">Notification</h3>
+                <p id="notification-message"></p>
+                <div class="modal-buttons">
+                    <button id="notification-ok">OK</button>
+                </div>
+            </div>
+        </div>
 
     <!-- External JS bundle for app behaviour (moved from inline script) -->
     <script src="script.js"></script>

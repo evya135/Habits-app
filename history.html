@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habit History</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #0a0e27;
+            color: #ffffff;
+            padding: 16px;
+            min-height: 100vh;
+            overflow-y: auto;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .header h1 {
+            color: #00ffc8;
+            font-size: 28px;
+            font-weight: 900;
+            margin-bottom: 8px;
+        }
+
+        .back-button {
+            background: rgba(0, 255, 200, 0.1);
+            border: 1px solid rgba(0, 255, 200, 0.3);
+            color: #00ffc8;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: rgba(0, 255, 200, 0.2);
+            border-color: #00ffc8;
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, #1a1f3a 0%, #16213e 100%);
+            border: 1px solid rgba(0, 255, 200, 0.2);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .summary-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #00ffc8;
+            margin-bottom: 16px;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .stat-item {
+            background: rgba(0, 255, 200, 0.05);
+            border: 1px solid rgba(0, 255, 200, 0.15);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 800;
+            color: #00ffc8;
+        }
+
+        .history-section {
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            margin-left: 4px;
+        }
+
+        .day-card {
+            background: linear-gradient(135deg, #1a1f3a 0%, #16213e 100%);
+            border: 1px solid rgba(0, 255, 200, 0.2);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .day-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .day-date {
+            font-size: 16px;
+            font-weight: 700;
+            color: #00ffc8;
+        }
+
+        .day-earned {
+            font-size: 18px;
+            font-weight: 800;
+            color: #00ffc8;
+        }
+
+        .day-details {
+            font-size: 14px;
+            color: #ccc;
+            margin-bottom: 8px;
+        }
+
+        .habits-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .habit-tag {
+            background: rgba(0, 255, 200, 0.1);
+            color: #00ffc8;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .withdrawals-list {
+            margin-top: 8px;
+        }
+
+        .withdrawal-item {
+            background: rgba(255, 165, 0, 0.1);
+            border: 1px solid rgba(255, 165, 0, 0.2);
+            color: #ffa500;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .no-data {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Habit History</h1>
+            <a href="index.html" class="back-button">← Back to Tracker</a>
+        </div>
+
+        <div class="summary-card">
+            <div class="summary-title">Overall Summary</div>
+            <div class="summary-stats">
+                <div class="stat-item">
+                    <div class="stat-label">Total Earned</div>
+                    <div class="stat-value" id="total-earned">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Total Withdrawn</div>
+                    <div class="stat-value" id="total-withdrawn">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="history-section">
+            <div class="section-title">Daily History</div>
+            <div id="daily-history">
+                <div class="no-data">No history available yet.</div>
+            </div>
+        </div>
+
+        <div class="history-section">
+            <div class="section-title">Withdrawal History</div>
+            <div id="withdrawal-history">
+                <div class="no-data">No withdrawals yet.</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load and display history
+        function loadHistory() {
+            const dailyHistory = JSON.parse(localStorage.getItem('dailyHistory') || '[]');
+            const withdrawals = JSON.parse(localStorage.getItem('withdrawals') || '[]');
+
+            // Calculate totals
+            const totalEarned = dailyHistory.reduce((sum, day) => sum + (day.earned || 0), 0);
+            const totalWithdrawn = withdrawals.reduce((sum, w) => sum + w.amount, 0);
+
+            document.getElementById('total-earned').textContent = totalEarned;
+            document.getElementById('total-withdrawn').textContent = totalWithdrawn;
+
+            // Display daily history
+            const dailyContainer = document.getElementById('daily-history');
+            if (dailyHistory.length > 0) {
+                dailyContainer.innerHTML = dailyHistory.map(day => `
+                    <div class="day-card">
+                        <div class="day-header">
+                            <div class="day-date">${new Date(day.date).toLocaleDateString()}</div>
+                            <div class="day-earned">+${day.earned || 0} ₪</div>
+                        </div>
+                        <div class="day-details">
+                            Instagram: ${day.instagramMinutes || 0} min | Net XP: ${day.netXP || 0}
+                        </div>
+                        <div class="habits-list">
+                            ${day.habits && day.habits.length > 0 ? 
+                                day.habits.map(habit => `<span class="habit-tag">${habit}</span>`).join('') : 
+                                '<span class="habit-tag">No habits completed</span>'}
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Display withdrawal history
+            const withdrawalContainer = document.getElementById('withdrawal-history');
+            if (withdrawals.length > 0) {
+                withdrawalContainer.innerHTML = withdrawals.map(w => `
+                    <div class="withdrawal-item">
+                        ${new Date(w.date).toLocaleDateString()} - Withdrew ₪${w.amount}
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Load history on page load
+        document.addEventListener('DOMContentLoaded', loadHistory);
+    </script>
+</body>
+</html></content>
+<parameter name="filePath">/Users/evyatar/Desktop/Habits app/history.html

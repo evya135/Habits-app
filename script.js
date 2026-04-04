@@ -25,6 +25,12 @@ function initializeStorage() {
     if (localStorage.getItem('lastDate') === null) {
         localStorage.setItem('lastDate', new Date().toDateString());
     }
+    if (localStorage.getItem('dailyHistory') === null) {
+        localStorage.setItem('dailyHistory', '[]');
+    }
+    if (localStorage.getItem('withdrawals') === null) {
+        localStorage.setItem('withdrawals', '[]');
+    }
 }
 
 // ---------- Habit persistence ----------
@@ -76,6 +82,22 @@ function handleNewDay() {
             streak = 0;
         }
         localStorage.setItem('streak', String(streak));
+
+        // Save daily history
+        const completedHabits = JSON.parse(localStorage.getItem('completedHabits') || '[]');
+        const habitNames = ['Workout', 'Walk', 'Sleep']; // Map indices to names
+        const completedHabitNames = completedHabits.map(index => habitNames[index]).filter(Boolean);
+        const instagramMinutes = Number(localStorage.getItem('instagramMinutes') || 0);
+
+        const dailyHistory = JSON.parse(localStorage.getItem('dailyHistory') || '[]');
+        dailyHistory.push({
+            date: lastDate,
+            habits: completedHabitNames,
+            instagramMinutes: instagramMinutes,
+            netXP: yesterdayXP,
+            earned: yesterdayXP
+        });
+        localStorage.setItem('dailyHistory', JSON.stringify(dailyHistory));
 
         // Reset today's editable state
         localStorage.setItem('todayXP', '0');
@@ -219,8 +241,8 @@ function refreshXP() {
     }
 
     if (moneyNode) {
-        // shows what your total will look like if today ended now
-        moneyNode.innerHTML = previewTotal;
+        // shows current total XP balance
+        moneyNode.innerHTML = savedTotal;
     }
 }
 
@@ -304,7 +326,116 @@ function saveLastDayXP() {
     const todayXP = Number(localStorage.getItem('todayXP') || 0);
     localStorage.setItem('lastDayXP', String(todayXP));
     refreshXP();
-    window.alert("Today's net XP saved as last day XP.");
+    showNotification("Saved", "Today's net XP saved as last day XP.");
+}
+
+// ---------- Withdraw money ----------
+function withdrawMoney() {
+    const currentTotal = Number(localStorage.getItem('xpL') || 0);
+    
+    if (currentTotal <= 0) {
+        showNotification("No Money Available", "You have no money available to withdraw!");
+        return;
+    }
+    
+    // Show modal
+    const modal = document.getElementById('withdraw-modal');
+    const maxText = document.getElementById('withdraw-max-text');
+    const input = document.getElementById('withdraw-amount');
+    const confirmBtn = document.getElementById('withdraw-confirm');
+    const cancelBtn = document.getElementById('withdraw-cancel');
+    
+    maxText.textContent = `Enter amount to withdraw (Max: ₪${currentTotal}):`;
+    input.value = '';
+    input.max = currentTotal;
+    modal.style.display = 'block';
+    
+    // Focus input
+    setTimeout(() => input.focus(), 100);
+    
+    const handleConfirm = () => {
+        const amount = input.value.trim();
+        const numAmount = Number(amount);
+        
+        if (isNaN(numAmount) || numAmount <= 0) {
+            showNotification("Invalid Amount", "Please enter a valid positive number.");
+            return;
+        }
+        
+        if (numAmount > currentTotal) {
+            showNotification("Insufficient Funds", `Cannot withdraw more than ₪${currentTotal}.`);
+            return;
+        }
+        
+        const newTotal = currentTotal - numAmount;
+        localStorage.setItem('xpL', String(newTotal));
+        
+        // Save withdrawal
+        const withdrawals = JSON.parse(localStorage.getItem('withdrawals') || '[]');
+        withdrawals.push({
+            date: new Date().toISOString(),
+            amount: numAmount
+        });
+        localStorage.setItem('withdrawals', JSON.stringify(withdrawals));
+        
+        refreshXP();
+        showNotification("Withdrawal Successful", `Successfully withdrew ₪${numAmount}! Remaining balance: ₪${newTotal}`);
+        
+        modal.style.display = 'none';
+        cleanup();
+    };
+    
+    const handleCancel = () => {
+        modal.style.display = 'none';
+        cleanup();
+    };
+    
+    const handleKeydown = (e) => {
+        if (e.key === 'Enter') {
+            handleConfirm();
+        } else if (e.key === 'Escape') {
+            handleCancel();
+        }
+    };
+    
+    const cleanup = () => {
+        confirmBtn.removeEventListener('click', handleConfirm);
+        cancelBtn.removeEventListener('click', handleCancel);
+        input.removeEventListener('keydown', handleKeydown);
+        document.removeEventListener('keydown', handleKeydown);
+    };
+    
+    confirmBtn.addEventListener('click', handleConfirm);
+    cancelBtn.addEventListener('click', handleCancel);
+    input.addEventListener('keydown', handleKeydown);
+    document.addEventListener('keydown', handleKeydown);
+}
+
+// ---------- Show notification modal ----------
+function showNotification(title, message) {
+    const modal = document.getElementById('notification-modal');
+    const titleEl = document.getElementById('notification-title');
+    const messageEl = document.getElementById('notification-message');
+    const okBtn = document.getElementById('notification-ok');
+    
+    titleEl.textContent = title;
+    messageEl.textContent = message;
+    modal.style.display = 'block';
+    
+    const handleOk = () => {
+        modal.style.display = 'none';
+        okBtn.removeEventListener('click', handleOk);
+        document.removeEventListener('keydown', handleOk);
+    };
+    
+    const handleKeydown = (e) => {
+        if (e.key === 'Enter' || e.key === 'Escape') {
+            handleOk();
+        }
+    };
+    
+    okBtn.addEventListener('click', handleOk);
+    document.addEventListener('keydown', handleKeydown);
 }
 
 // ---------- Start ----------
