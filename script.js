@@ -539,22 +539,7 @@ const ACHIEVEMENTS = [
     { id: 'round_number', name: '🔄 Round Number', target: 1000, type: 'exact-total', reward: 10 },
     { id: 'habit_hoarder', name: '📚 Habit Hoarder', target: 10, type: 'habit-count', reward: 5 },
     { id: 'weekend_warrior', name: '🎉 Weekend Warrior', target: 1, type: 'weekend-perfect', reward: 4 },
-    { id: 'monday_motivation', name: '💪 Monday Motivation', target: 1, type: 'monday-start', reward: 2 },
-    { id: 'procrastinator', name: '⏰ Procrastinator', target: 1, type: 'last-minute', reward: 1 },
-    { id: 'social_butterfly', name: '🦋 Social Butterfly', target: 50, type: 'messages', reward: 3 },
-    { id: 'midnight_snack', name: '🌙 Midnight Snack', target: 1, type: 'late-eating', reward: 2 },
-    { id: 'perfectionist', name: '✨ Perfectionist', target: 3, type: 'habit-redo', reward: 2 },
-    // Even More Random & Funny Milestones
-    { id: 'dance_party', name: '💃 Dance Party', target: 1, type: 'dance-session', reward: 2 },
-    { id: 'singing_shower', name: '🎤 Singing Shower', target: 5, type: 'shower-songs', reward: 1 },
-    { id: 'pet_whisperer', name: '🐾 Pet Whisperer', target: 1, type: 'pet-playtime', reward: 3 },
-    { id: 'kitchen_experiment', name: '👨‍🍳 Kitchen Experiment', target: 1, type: 'weird-recipe', reward: 2 },
-    { id: 'cloud_watcher', name: '☁️ Cloud Watcher', target: 10, type: 'cloud-shapes', reward: 1 },
-    { id: 'random_kindness', name: '💝 Random Kindness', target: 1, type: 'good-deed', reward: 5 },
-    { id: 'dream_journal', name: '🌙 Dream Journal', target: 7, type: 'dream-log', reward: 2 },
-    { id: 'puzzle_master', name: '🧩 Puzzle Master', target: 1, type: 'jigsaw-complete', reward: 3 },
-    { id: 'stargazer', name: '⭐ Stargazer', target: 1, type: 'constellation-spot', reward: 2 },
-    { id: 'memory_lane', name: '📸 Memory Lane', target: 1, type: 'old-photos', reward: 1 }
+    { id: 'monday_motivation', name: '💪 Monday Motivation', target: 1, type: 'monday-start', reward: 2 }
 ];
 
 function checkAndUnlockAchievements() {
