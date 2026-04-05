@@ -532,13 +532,10 @@ const ACHIEVEMENTS = [
     { id: 'medias_enemy', name: '📱 Media\'s Enemy', target: 7, type: 'screen-time', reward: 5 },
     { id: 'early_bird', name: '🐦 Early Bird', target: 5, type: 'wake-time', reward: 3 },
     { id: 'night_owl', name: '🦉 Night Owl', target: 24, type: 'bed-time', reward: 3 },
-    { id: 'coffee_addict', name: '☕ Coffee Addict', target: 5, type: 'coffee', reward: 2 },
-    { id: 'couch_potato', name: '🥔 Couch Potato', target: 8, type: 'screen-time', reward: 4 },
     { id: 'speed_demon', name: '🏎️ Speed Demon', target: 5, type: 'completion-time', reward: 3 },
     { id: 'lucky_number', name: '🍀 Lucky Number', target: 777, type: 'exact-total', reward: 7 },
     { id: 'round_number', name: '🔄 Round Number', target: 1000, type: 'exact-total', reward: 10 },
     { id: 'habit_hoarder', name: '📚 Habit Hoarder', target: 10, type: 'habit-count', reward: 5 },
-    { id: 'weekend_warrior', name: '🎉 Weekend Warrior', target: 1, type: 'weekend-perfect', reward: 4 },
     { id: 'monday_motivation', name: '💪 Monday Motivation', target: 1, type: 'monday-start', reward: 2 }
 ];
 
